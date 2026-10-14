@@ -5,6 +5,7 @@ using System.Collections;
 using Unity.VisualScripting;
 
 public class CollectTriggerScripts : MonoBehaviour
+    // test for git 10 14 2026
 {
     [Header("Texts for collectablies")]
     public TextMeshProUGUI coinText;
