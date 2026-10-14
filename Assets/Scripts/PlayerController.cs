@@ -34,6 +34,8 @@ public class PlayerController : MonoBehaviour
     bool _jumpPressed;
     float _rotationVelocity;
 
+    bool _onPlatform;
+
 
 
     private void Awake()
@@ -82,8 +84,10 @@ public class PlayerController : MonoBehaviour
 
         transform.rotation = Quaternion.Euler(0f, smoothAngle, 0f);
 
-        //Vector3 moveDir = new Vector3 (_moveInput.x, 0f , _moveInput.y);    
+        //Vector3 moveDir = new Vector3 (_moveInput.x, 0f , _moveInput.y);
+        
         Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
+        if (!_onPlatform)
         _characterController.Move(moveDir.normalized * speed * Time.deltaTime);
     }
 
@@ -96,11 +100,22 @@ public class PlayerController : MonoBehaviour
             return;
         }
         _isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+        //var movingPlatform = Physics.OverlapSphere(groundCheck.position, groundDistance);
+        //foreach (var platform in movingPlatform) 
+        //{
+        //    if (platform.CompareTag("MovingPlatform"))
+        //    {
+        //        Debug.Log("Hit Platform");
+        //        transform.parent = platform.gameObject.transform;
+        //    }        
+        //}
+
 
         if (_isGrounded && _velocity.y < 0)
         {
             _velocity.y = -2f;
             _isJumping = false;
+           // transform.parent = null;
         }
 
     }
@@ -148,5 +163,18 @@ public class PlayerController : MonoBehaviour
         if (groundCheck == null) return;
         Gizmos.color = _isGrounded ? Color.green : Color.red;
         Gizmos.DrawWireSphere(groundCheck.position , groundDistance);
+    }
+
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        if (hit.gameObject.tag == "MovingPlatform")
+        {
+            transform.parent = hit.transform;
+            _onPlatform = true;
+        }
+        else
+        {
+            transform.parent = null;
+        }
     }
 }
